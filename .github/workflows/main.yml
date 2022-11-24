@@ -9,16 +9,16 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
 
-      - name: Cache
+      - name: Check cache
+        id: cache-primes
         uses: actions/cache@v3
-        id: cache
 	with:
           path: node_modules
 	  key:
 	    npm-packages-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-primes.outputs.cache-hit != 'true'
 	run: npm install
 
   build:
