@@ -1,28 +1,29 @@
 name: test
 
-on: 
+on:
 	push:
-		branches: [ main ]
+		branches:
+			- main
 
 jobs:
 	check:
-		runs-on: ubuntu-latest # virtual machine
+		runs-on: ubuntu-latest
 		steps:
-			- uses: actions/checkout@v3 # for repository를 checkout
+			- uses: actions/checkout@v3
 
-			- name: Setup Node.js environment
+			- name: Environment
 				uses: actions/setup-node@v3
-			  with:
-			    node-version: '18'
+			  	with:
+				    node-version: '18'
 
-			- name: Cache # check module
-	      id: cache
-	      uses: actions/cache@v3
-				with:
-					path: node_modules
-					key: npm-packages-${{ hashFiles('**/package-lock.json') }}
+			- name: Cache
+			      id: cache
+			      uses: actions/cache@v3
+			      with:
+			      	path: node_modules
+				key: npm-packages-${{ hashFiles('**/package-lock.json') }}
 		
-			- name: Dependencies 
+			- name: Dependencies
 				if: steps.cache.outputs.cache-hit != 'true'
 				run: npm install
 
@@ -56,7 +57,7 @@ jobs:
 				uses: actions/create-release@v1
 				needs: build
 				env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          				GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 				with:
 					tag_name: ${{ env.TODAY }}.${{ needs.build.outputs.build_number }}
 					release_name: ${{ env.TODAY }}.${{ needs.build.outputs.build_number }}
