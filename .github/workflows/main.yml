@@ -30,24 +30,53 @@ jobs:
       if: steps.node-cache.outputs.cache-hit != 'true'
       run: npm install
 
-  build:
+  version:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
-    - name: Build
-      run: npm run build
-      
-    - name: Bump version and push tag
-      id: tag_version
+    - name: Get current data
+      if: github.event.pull_request.merged == true
+      id: date
+      run: echo YEAR=$(date +%Y) >> $GITHUB_ENV
+
+    - name: Generate build number
+      id: buildnumber
+      uses: einaregilsson/build-number@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Generate tag
       uses: mathieudutour/github-tag-action@v5.5
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Create a GitHub release
+    - name: Generate GitHub release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: 'test'
-        release_name: 'test'
+        tag_name: ${{ env.YEAR }}.01.${{ steps.buildnumber.outputs.build_number }} # 스프린트 넘버가 변경되면 가운데 숫자 수정
+        release_name: ${{ env.YEAR }}.01.${{ steps.buildnumber.outputs.build_number }} # 스프린트 넘버가 변경되면 가운데 숫자 수정
+
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+
+  #   - name: Build
+  #     run: npm run build
+      
+  #   - name: Bump version and push tag
+  #     id: tag_version
+  #     uses: mathieudutour/github-tag-action@v5.5
+  #     with:
+  #       github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  #   - name: Create a GitHub release
+  #     uses: actions/create-release@v1
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     with:
+  #       tag_name: 'test'
+  #       release_name: 'test'
