@@ -37,23 +37,18 @@ jobs:
 
     - name: Build
       run: npm build
-
-    - name: Count build number
-      id: number
-      uses: einaregilsson/build-number@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Get current date
-      if: github.event.pull_request.merged == true
-      id: date
-      run: echo TODAY=$(date +%Y.%m) >> $GITHUB_ENV
       
-    - name: Tagging
-      id: create_release
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v5.5
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create a GitHub release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.TODAY }}.${{ needs.build.outputs.build_number }}
-	release_name: ${{ env.TODAY }}.${{ needs.build.outputs.build_number }}
+        tag_name: ${{ steps.tag_version.outputs.new_tag }}
+	release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+	body: ${{ steps.tag_version.outputs.changelog }}
