@@ -19,10 +19,12 @@ jobs:
       env:
         cache-name: cache-node-modules
       with:
-        path: node_modules
-	key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-	restore-keys: |
-	  ${{ runner.os }}-node-modules-
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
     - name: Install dependencies
       if: steps.node-cache.outputs.cache-hit != 'true'
@@ -34,8 +36,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Build
-      run: npm run build
-      needs: check
+      run: npm build
 
     - name: Count build number
       id: number
@@ -47,12 +48,12 @@ jobs:
       if: github.event.pull_request.merged == true
       id: date
       run: echo TODAY=$(date +%Y.%m) >> $GITHUB_ENV
-
+      
     - name: Tagging
+      id: create_release
       uses: actions/create-release@v1
-      needs: build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-	tag_name: ${{ env.TODAY }}.${{ needs.build.outputs.build_number }}
+        tag_name: ${{ env.TODAY }}.${{ needs.build.outputs.build_number }}
 	release_name: ${{ env.TODAY }}.${{ needs.build.outputs.build_number }}
