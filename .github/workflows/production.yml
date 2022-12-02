@@ -14,7 +14,7 @@ jobs:
     - name: Get current data
       if: github.event.pull_request.merged == true
       id: date
-      run: echo "::set-output name=YEAR::$(date +%Y)"
+      run: echo YEAR=$(date +%Y) >> $GITHUB_OUTPUT
 
     - name: Generate build number
       id: buildnumber
