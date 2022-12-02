@@ -14,7 +14,7 @@ jobs:
     - name: Get current data
       if: github.event.pull_request.merged == true
       id: date
-      run: echo YEAR=$(date +%Y) >> $GITHUB_ENV
+      run: echo "::set-output name=YEAR::$(date +%Y)"
 
     - name: Generate build number
       id: buildnumber
@@ -32,5 +32,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.YEAR }}.04.${{ steps.buildnumber.outputs.build_number }}
-        release_name: ${{ env.YEAR }}.04.${{ steps.buildnumber.outputs.build_number }}
+        tag_name: ${{ steps.date.outputs.YEAR }}.04.${{ steps.buildnumber.outputs.build_number }}
+        release_name: ${{ steps.date.outputs.YEAR }}.04.${{ steps.buildnumber.outputs.build_number }}
