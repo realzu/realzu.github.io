@@ -1,9 +1,11 @@
 name: front-end production
 
 on:
-  pull_request:
-    branches: [ production ]
-    types: [ closed ]
+  # pull_request:
+  #   branches: [ production ]
+  #   types: [ closed ]
+  push:
+    branches: [ main ]
 
 jobs:
   tagging:
@@ -23,7 +25,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Generate tag
-      uses: mathieudutour/github-tag-action@v5.5
+      uses: mathieudutour/github-tag-action@v6.1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
