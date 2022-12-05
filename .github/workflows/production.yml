@@ -30,9 +30,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Generate GitHub release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: ncipollo/release-action@v1
       with:
         tag_name: ${{ steps.date.outputs.YEAR }}.04.${{ steps.buildnumber.outputs.build_number }}
         release_name: ${{ steps.date.outputs.YEAR }}.04.${{ steps.buildnumber.outputs.build_number }}
