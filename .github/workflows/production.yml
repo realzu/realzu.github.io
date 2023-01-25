@@ -1,9 +1,6 @@
 name: front-end production
 
 on:
-  # pull_request:
-  #   branches: [ production ]
-  #   types: [ closed ]
   push:
     branches: [main]
 
